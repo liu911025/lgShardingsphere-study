@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: traditional
+
+mybatis:
+  # config-location: classpath:mybatis-config.xml
+  mapper-locations: classpath:mappers/**/*.xml
+  type-aliases-package: com.study.sharding.pojo
