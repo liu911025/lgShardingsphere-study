@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: traditional
+    active: sharding-databases
 
 mybatis:
   # config-location: classpath:mybatis-config.xml
