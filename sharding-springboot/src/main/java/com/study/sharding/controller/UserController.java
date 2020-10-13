@@ -1,11 +1,13 @@
 package com.study.sharding.controller;
 
+import com.study.sharding.pojo.User;
 import com.study.sharding.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.SQLException;
+import java.util.List;
 
 @RequestMapping("user")
 @RestController
@@ -14,7 +16,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("initUser")
+    @RequestMapping("addUser")
     public String initUser() {
         try {
             userService.processUsers();
@@ -24,4 +26,14 @@ public class UserController {
         return "success";
     }
 
+    @RequestMapping("getUser")
+    public List<User> getUser() {
+        try {
+            List<User> users = userService.getUsers();
+            return users;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

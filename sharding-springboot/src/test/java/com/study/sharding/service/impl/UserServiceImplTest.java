@@ -21,4 +21,8 @@ public class UserServiceImplTest {
         userService.processUsers();
     }
 
+    @Test
+    public void getUsers() throws SQLException {
+        userService.getUsers();
+    }
 }

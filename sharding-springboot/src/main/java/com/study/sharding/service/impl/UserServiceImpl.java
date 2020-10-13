@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
 	private List<Long> insertUsers() throws SQLException {
 		List<Long> result = new ArrayList<>(10);
-		for (Long i = 1L; i <= 10; i++) {
+		for (Long i = 1L; i <= 1; i++) {
 			User user = new User();
 			user.setUserId(i);
 			user.setUserName("user_" + i);
