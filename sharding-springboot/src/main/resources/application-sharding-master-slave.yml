@@ -1,0 +1,108 @@
+#读写分离多主多从 + 分库分表
+spring:
+  shardingsphere:
+    datasource:
+      names: dsmaster0, dsmaster1, dsmaster0-slave0, dsmaster0-slave1, dsmaster1-slave0, dsmaster1-slave1
+      dsmaster0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster0?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+      dsmaster1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster1?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+      dsmaster0-slave0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster0-slave0?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+      dsmaster0-slave1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster0-slave1?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+      dsmaster1-slave0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster1-slave0?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+      dsmaster1-slave1:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/dsmaster1-slave1?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+        username: root
+        password: root
+        maxPoolSize: 50
+        minPoolSize: 1
+    masterslave:
+      dsmaster0:
+       master-data-source-name: dsmaster0
+       slave-data-source-names: dsmaster0-slave0, dsmaster0-slave1
+       load-balance-algorithm-type: random
+      dsmaster1:
+       master-data-source-name: dsmaster1
+       slave-data-source-names: dsmaster1-slave0, dsmaster1-slave1
+       load-balance-algorithm-type: random
+
+    sharding:
+      default-database-strategy:
+        inline:
+          sharding-column: user_id
+          algorithm-expression: dsmaster$->{user_id % 2}
+      binding-tables: health_record,health_task
+      broadcast-tables: health_level
+      tables:
+        health_record:
+          actual-data-nodes: dsmaster$->{0..1}.health_record$->{0..2}
+          table-strategy:
+            inline:
+              sharding-column: record_id
+              algorithm-expression: health_record$->{record_id % 3}
+          key-generator:
+            type: SNOWFLAKE
+            column: record_id
+            props:
+              worker:
+                id: 33
+        health_task:
+          actual-data-nodes: dsmaster$->{0..1}.health_task$->{0..2}
+          table-strategy:
+            inline:
+              sharding-column: record_id
+              algorithm-expression: health_task$->{record_id % 3}
+          key-generator:
+            type: SNOWFLAKE
+            column: task_id
+            props:
+              worker:
+                id: 33
+# 也可以以下配置 主从
+#      master-slave-rules:
+#        dsmaster0:
+#          master-data-source-name: dsmaster0
+#          slave-data-source-names: dsmaster0-slave0, dsmaster0-slave1
+#        dsmaster1:
+#          master-data-source-name: dsmaster1
+#          slave-data-source-names: dsmaster1-slave0, dsmaster1-slave1
+    props:
+      sql.show: true
+
+
+
