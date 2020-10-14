@@ -92,8 +92,8 @@ spring:
             column: task_id
             props:
               worker:
-                id: 33
-# 也可以以下配置 主从
+                id: 33HintManager
+    # 也可以以下配置 主从
 #      master-slave-rules:
 #        dsmaster0:
 #          master-data-source-name: dsmaster0
